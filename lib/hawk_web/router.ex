@@ -18,6 +18,7 @@ defmodule HawkWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/restaurants", RestaurantLive
   end
 
   # Other scopes may use custom stacks.
