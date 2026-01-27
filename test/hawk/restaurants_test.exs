@@ -113,5 +113,27 @@ defmodule Hawk.RestaurantsTest do
 
       assert length(bi_poland_restaurants_names) == length(expected_names)
     end
+
+    test "type :bi returns restaurants only from the one tree" do
+      rzeszow = insert(:location, name: "Rzeszów", access_type: :bi)
+      baranowka = insert(:location, name: "baranowka", access_type: :single, parent: rzeszow)
+      baranowka_restaurant_1 = insert(:restaurant, name: "schabowy", location: baranowka)
+      baranowka_restaurant_2 = insert(:restaurant, name: "ziemniaki", location: baranowka)
+
+      bi_poland_restaurants = Restaurants.list_accessible_restaurants(rzeszow)
+      bi_poland_restaurants_names = Enum.map(bi_poland_restaurants, & &1.name)
+
+      expected_names = [
+        baranowka_restaurant_1.name,
+        baranowka_restaurant_2.name
+      ]
+
+      assert Enum.all?(
+               expected_names,
+               fn name -> name in bi_poland_restaurants_names end
+             )
+
+      assert length(bi_poland_restaurants_names) == length(expected_names)
+    end
   end
 end

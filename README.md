@@ -13,4 +13,9 @@ You can visit [`localhost:4000/restaurants`](http://localhost:4000/restaurants) 
   - recursively searches downwards, fetches only restaurants that are direct child of the selected location
 - :bi
   - finds all the restaurants in the database, finds the root of the tree and recursively looks for the restaurants
-  - with current implementation it assumes there is only one root
+
+### Other options I considered
+
+- Materialized paths
+  - Should be easier to query
+  - Harder to maintain since changing one location name would result in updating all descendants as well
