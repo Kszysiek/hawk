@@ -1,18 +1,16 @@
 # Hawk
 
-To start your Phoenix server:
+- Run `mix setup` to install and setup dependencies
+- Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+You can visit [`localhost:4000/restaurants`](http://localhost:4000/restaurants) to check the basic visualization for the restaurants
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Searching methods
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+- :node
+  - allows to search for only the selected location
+- :single
+  - recursively searches downwards, fetches only restaurants that are direct child of the selected location
+- :bi
+  - finds all the restaurants in the database, finds the root of the tree and recursively looks for the restaurants
+  - with current implementation it assumes there is only one root
