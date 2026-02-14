@@ -25,36 +25,47 @@ defmodule Hawk.Restaurants do
     |> Repo.all()
   end
 
-  defp list_accessible_restaurants(location_id, :node, _parent_id) do
-    query =
-      from r in Restaurant,
-        join: l in Location,
-        on: r.location_id == l.id,
-        where: l.id == ^location_id
+  defp list_accessible_restaurants(_location_id, :node, parent_id) do
+    base =
+      from l in Location,
+        where: l.parent_id == ^parent_id,
+        select: %{id: l.id}
 
-    Repo.all(query)
+    recursive =
+      from l in Location,
+        join: t in "node_tree",
+        on: l.parent_id == t.id,
+        select: %{id: l.id}
+
+    node_tree = union(base, ^recursive)
+
+    from(r in Restaurant, join: t in "node_tree", on: r.location_id == t.id)
+    |> recursive_ctes(true)
+    |> with_cte("node_tree", as: ^node_tree)
+    |> Repo.all()
   end
 
   defp list_accessible_restaurants(location_id, :bi, _parent_id) do
     ancestors = ancestors_cte(location_id)
 
-    root_selector =
+    seeds =
       from a in "ancestors",
-        where: is_nil(a.parent_id),
-        select: %{id: a.id}
+        left_join: s in Location,
+        on: a.access_type == "node" and s.parent_id == a.parent_id,
+        select: %{id: coalesce(s.id, a.id)}
 
-    tree_recursion =
-      from l in Location, join: t in "tree", on: l.parent_id == t.id, select: %{id: l.id}
+    recursive_tree =
+      from l in Location,
+        join: t in "tree",
+        on: l.parent_id == t.id,
+        select: %{id: l.id}
 
-    full_tree = union_all(root_selector, ^tree_recursion)
+    tree = union(seeds, ^recursive_tree)
 
-    query =
-      from r in Restaurant, join: t in "tree", on: r.location_id == t.id, select: r
-
-    query
+    from(r in Restaurant, join: t in "tree", on: r.location_id == t.id, select: r)
     |> recursive_ctes(true)
     |> with_cte("ancestors", as: ^ancestors)
-    |> with_cte("tree", as: ^full_tree)
+    |> with_cte("tree", as: ^tree)
     |> Repo.all()
   end
 
@@ -62,13 +73,14 @@ defmodule Hawk.Restaurants do
     base =
       from l in Location,
         where: l.id == ^start_id,
-        select: %{id: l.id, parent_id: l.parent_id}
+        select: %{id: l.id, parent_id: l.parent_id, access_type: type(l.access_type, :string)}
 
     recursive =
       from l in Location,
         join: c in "ancestors",
         on: l.id == c.parent_id,
-        select: %{id: l.id, parent_id: l.parent_id}
+        where: c.access_type == "bi",
+        select: %{id: l.id, parent_id: l.parent_id, access_type: type(l.access_type, :string)}
 
     union_all(base, ^recursive)
   end

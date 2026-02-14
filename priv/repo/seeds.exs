@@ -16,7 +16,7 @@ seeds = [
         children: [
           %{
             name: "Poland",
-            access_type: :single,
+            access_type: :node,
             children: [
               %{
                 name: "Warsaw",
@@ -25,7 +25,7 @@ seeds = [
               },
               %{
                 name: "Krakow",
-                access_type: :node,
+                access_type: :bi,
                 restaurants: ["Dragon's Den"]
               }
             ]
@@ -45,13 +45,13 @@ seeds = [
         children: [
           %{
             name: "USA",
-            access_type: :bi,
+            access_type: :node,
             children: [
               %{
                 name: "California",
                 access_type: :single,
                 children: [
-                  %{name: "San Francisco", access_type: :node, restaurants: ["Sourdough Star"]},
+                  %{name: "San Francisco", access_type: :single, restaurants: ["Sourdough Star"]},
                   %{name: "Los Angeles", access_type: :node, restaurants: ["Hollywood Hotdog"]}
                 ]
               }
