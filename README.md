@@ -8,11 +8,14 @@ You can visit [`localhost:4000/restaurants`](http://localhost:4000/restaurants) 
 ## Searching methods
 
 - :node
-  - allows to search for only the selected location
+  - Allows to find all restaurants in selected location and it's siblings
 - :single
   - recursively searches downwards, fetches only restaurants that are direct child of the selected location
 - :bi
-  - finds all the restaurants in the database, finds the root of the tree and recursively looks for the restaurants
+  - searches upwards respecting parent access type
+    - bi - looks further upwards
+    - node - fetches siblings as well
+    - single - looks only down the tree
 
 ### Other options I considered
 
