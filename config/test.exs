@@ -11,13 +11,7 @@ config :hawk, Hawk.Repo,
   hostname: "localhost",
   database: "hawk_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2,
-  timeout: :infinity,
-  # 2. CHECKOUT: Timeout for waiting on a connection from the pool
-  pool_timeout: :infinity,
-
-  # 3. SANDBOX: Timeout for how long a process can "own" a sandbox connection
-  ownership_timeout: :infinity
+  pool_size: System.schedulers_online() * 2
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
